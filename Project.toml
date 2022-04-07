@@ -1,0 +1,4 @@
+name = "lab"
+uuid = "9c0ea14b-ed80-48b3-b324-73bc43372ad3"
+authors = ["David Kanter Eivin <kanter.dev@gmail.com>"]
+version = "0.1.0"
