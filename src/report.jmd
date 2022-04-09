@@ -1,10 +1,16 @@
-module lab
+---
+title : Pendulum Experiment
+author : David Kanter Eivin
+date: 8th April 2022
+---
+
+```julia, echo=false, result=false
 using Plots
 using DataFrames
 # Assume SI units unless otherwise specified!
 
 const g = 9.81
-const Δt = 1 / 1000
+const Δt = 1 / 24
 
 struct Bob
     mass::Number
@@ -48,12 +54,17 @@ function extremes(df::AbstractDataFrame)
     end
     extremes
 end
+```
 
-function main()
-    b = Bob(0.01, .1, 0.25)
-    p = Pendulum(1., deg2rad(50), b)
-    df = simulate(p, 30)
-    e = extremes(df)
+Whoa!
+```julia
+b = Bob(0.025, .02, 0.25)
+p = Pendulum(.3, deg2rad(30), b)
+df = simulate(p, 30)
+
+anim = @animate for i in 1:nrow(df)
+  plot(df[1:i, :time], rad2deg.(df[1:i, :θ]), legend=false, xlim=(0, 30), ylim=(-50, 50))
 end
 
-end
+gif(anim, "position.gif", fps = 24)
+```
