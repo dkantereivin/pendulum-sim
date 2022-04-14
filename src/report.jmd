@@ -1,50 +1,156 @@
 ---
 title : Pendulum Experiment
+course: ARTSSCI 2D06
 author : David Kanter Eivin
 date: 8th April 2022
 ---
-
-```julia, echo=false, result=false
-using Plots
+```julia, echo=false
+using lab
 using DataFrames
-# Assume SI units unless otherwise specified!
+using Plots
+using Statistics
+```
+# Introduction
+Pendulums have for hundreds of years interested physics and industrialists alike.
+Not only are pendulums mystical to observe, they are immensely useful for mechanical timekeeping.
+From a physics standpoint, pendulums demonstrate the constant transformation between potential and kinetic energy,
+and, in a vacuum (with frictionless a frictionless pivot),
+can also demonstrate Newton's law of inertia by continuing to swing forever.
 
-const g = 9.81
-const Δt = 1 / 24
+![Pendulum](pendulum.svg)
 
-struct Bob
-    mass::Number
-    diameter::Number
-    γ::Number
+Pendulums rely on the force of gravity pulling down on a massive bob,
+counteracted by tensive forces on the massless string/rod.
+The result is angular acceleration towards the point of maximum kinetic energy.
+An oscillation period is the time it takes for the bob to move across the pendulum
+(to the opposite point of maximum potential energy) and return to the highest point where it started.
+
+This project simulates a pendulum and uses the results of the simulation to discuss the parameters determining
+a pendulum's period. The nature of a simulation means that while results are very precise and reproducible,
+their accuracy is largely dependent on previous observations:
+in this case, the laws of angular motion and air resistance.
+The code is included in this report is written in the simplest terms possible;
+while a software background may be helpful,
+a physics background should be sufficient to *understand* the report *and* the simulation's source code.
+
+\pagebreak
+
+# Purpose
+Given the importance of the oscillation period,
+this experiment examines the dependence of the period on the pendulum's
+**maximum/starting amplitude** and **length**.
+Additionally, the experiment aims to **precisely simulate pendulum movement**
+with and without air resistance for reuse in other pendulum experiments.
+
+# Method
+## Software Simulation (Apparatus)
+The [Julia Programming Language](https://julialang.org/) was selected for its
+readable mathematical syntax for non-technical readers and excellent performance.
+To avoid the tedious and unclear computation of kinetic vectors using ``x`` and ``y`` coordinates,
+I used Lagrangian mechanics to work directly with angular quantities.
+After deriving formulas for instantaneous angular acceleration (``\alpha``) and air resistance (shown below),
+I used Euler's method to compute the next angular velocity (``\omega``) and position (``\theta``).
+Essentially, angular acceleration is assumed to be constant for a small time interval ``\Delta t``
+in order to compute ``\omega``.
+This is assumed to be constant for the same time interval, thus allowing the computation of ``\theta``
+at ``t + \Delta t``.
+Time is then advanced by ``\Delta t`` and ``\theta`` is once again used to compute ``\alpha``.
+**For all trials, ``\Delta t = `j Δt`\mathrm{s}``**.
+Each step is recorded into a `DataFrame` to be available for analysis and animation.
+
+### Lagrangian
+The simulation formulas start from a general differential equation for motion.
+$$
+\frac{d}{dt} \frac{dL}{d\theta} = \frac{2L}{2\theta} - \frac{2D}{2\theta}
+$$
+where ``L`` is the Lagrangian and ``D`` is the dampening factor.
+Then, where ``l`` represents the length of the rod:
+$$
+L = K - U \\
+K = \text{Kinetic Energy} = \frac{1}{2} mv^2 \\
+= \frac{1}{2} ml^2\theta^2 \\
+
+U = \text{Potential Energy} = mgh = mg(l - l \cdot \cos \theta)\\
+$$
+
+Together, this comprises the final Lagrangian:
+$$
+L = \frac{1}{2} ml^2\theta^2 - mg(l - l \cdot \cos \theta)
+$$
+which is differentiated with respect to ``\theta`` to achieve:
+$$
+\frac{d}{dt}\left(ml^2\dot\theta\right) = -L \sin\theta mg \\
+\implies \ddot\theta = α = -\frac{g\sin\theta}{l}
+$$
+As code:
+```julia, eval=false
+ddθ(θ::Number) = -(sin(θ) * g) / radius
+```
+
+### Air Resistance (drag)
+Using the above formula, this simulation will continue forever.
+While this is useful for studying theory,
+it will differ substantially from experimental results,
+which are impacted substantially by air resistance.
+
+To simulate air resistance,
+first I determined whether the linear or quadratic formulas would be more appropriate.
+$$
+\Omega_{\mathrm{linear}} = bv = βDv \\
+\Omega_{\mathrm{quadratic}} = cv^2 = \gamma D^2 v^2
+$$
+where ``D`` is the diameter of the bob.
+The bob is assumed to be a sphere with ``\gamma = `j const γ = .25; γ` ``.
+I also chose to measure velocity from the point of maximum PE.
+$$
+mgh = \frac{1}{2} mv^2 \\
+\implies gl = v^2 \\
+v = \sqrt{gl}
+$$
+Then:
+$$
+\frac{\Omega_{\mathrm{linear}}}{\Omega_{\mathrm{quadratic}}}
+= \frac{\beta D \sqrt{gl}}{\gamma D^2 \sqrt{gl}^2}
+= \frac{\beta}{\gamma D \sqrt{gl}}
+$$
+Using example values ``D = `j D = .1; D`\mathrm{m}`` and ``l = `j l = .1; l`\mathrm{m}``:
+```julia
+(1.6e-4) \ (γ * D * √(g * l))
+```
+we have that the quadratic formula is substantially larger
+(`\` is [inverse division](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Arithmetic-Operators))
+so **we will use the quadratic formula for air resistance**.
+
+After differentiating and simplifying as we did previously,
+the formula for α which accounts for drag is:
+$$
+\alpha = -\frac{g\sin\theta}{l} - \gamma D^2 l \omega^2
+$$
+Notably, this is *not* a vector but a magnitude,
+and so direction must be adjusted to oppose ``\omega``.
+```julia, eval=false
+drag(ω::Number) = γ * (radius) * (diameter ^ 2) * (ω ^ 2) / mass
+```
+
+### Final Code:
+Using the above formulas,
+the iterative process for simulating data is summarized as follows (see Appendix A for full code).
+```julia, eval=false
+# Initial θ and ω are required.
+# θ is provided as a parameter, ω is assumed to be 0
+ω = 0
+for t in range(0, duration; step=Δt) # increments Δt as needed
+    α = ddθ(θ) - copysign(drag(ω), ω)
+    push!(df, [t, θ, ω, α]) # record state at this point
+    ω += α * Δt
+    θ += ω * Δt
 end
+```
 
-struct Pendulum
-    pivot::@NamedTuple{x::Number, y::Number}
-    radius::Number
-    θ::Number
-    bob::Bob
-    Pendulum(radius::Number, θ::Number, bob::Bob) = new((x = 0, y = 0), radius, θ, bob)
-end
-
-function simulate(pendulum::Pendulum, duration::Number)
-    (; radius, θ, bob) = pendulum
-    (; mass, diameter, γ) = bob
-
-    # change in acceleration in a vacuum
-    ddθ(θ::Number) = -(sin(θ) * g) / radius
-    drag(ω::Number) = γ * (radius) * (diameter ^ 2) * (ω ^ 2) / mass
-
-    df = DataFrame(time=Float64[], θ=Float64[], ω=Float64[], α=Float64[])
-    ω = 0
-    for t in range(0, duration; step=Δt)
-        α = ddθ(θ) - copysign(drag(ω), ω)
-        push!(df, [t, θ, ω, α])
-        ω += α * Δt
-        θ += ω * Δt
-    end
-    df
-end
-
+## Data Collection
+To collect the relevant data,
+I first identified & filtered for only the extremes of ``\theta`` using ``\omega``.
+```julia, eval=false
 function extremes(df::AbstractDataFrame)
     extremes = DataFrame(first(df))
     for i in 3:nrow(df)
@@ -55,16 +161,85 @@ function extremes(df::AbstractDataFrame)
     extremes
 end
 ```
+The first period is then taken as the difference between the 1st and 3rd extreme.
 
-Whoa!
+The simulation is run several times with different parameters
+to simulate the independent variables under study (amplitude, length/radius),
+and the period is recorded at each step.
+Average period is taken as the mean of the first 15 periods (arbitrarily chosen).
+
+In order to run the simulation with and without air resistance,
+I simply set ``\gamma = 0`` which removes this term from the equation for ``\alpha``.
+
+# Results
+Please see Appendix B for animated figures.
+## General/Simulation Effectiveness
+Firstly, to validate our simulation for future tests,
+we can visualize the trajectory of our pendulum with and without air resistance.
 ```julia
-b = Bob(0.025, .02, 0.25)
-p = Pendulum(.3, deg2rad(30), b)
-df = simulate(p, 30)
+p = Pendulum(
+    .3, # 30cm pendulum
+    deg2rad(45), # initial θ
+    Bob(
+        mass = .05, # 50g
+        diameter = .05, # 5cm
+        γ = γ
+    )
+)
 
-anim = @animate for i in 1:nrow(df)
-  plot(df[1:i, :time], rad2deg.(df[1:i, :θ]), legend=false, xlim=(0, 30), ylim=(-50, 50))
+with_resistance = simulate(p, 10)
+no_resistance = simulate(p, 10, resistance=false)
+
+plot(
+    with_resistance[!, :time],
+    [with_resistance[!, :θ], no_resistance[!, :θ]],
+    label = ["\\gamma = $γ" "\\gamma = 0"],
+    xlabel = "Time (s)",
+    ylabel = "Position (deg)",
+    yformatter = round ∘ rad2deg
+)
+```
+We can see that the pendulum in a vacuum has constant amplitude,
+whereas the simulation with air resistance displays a slight dampening effect.
+This effect is likely so pronounced because the bob is light (`j p.bob.mass * 1000`g).
+
+## Amplitude and Period
+```julia
+df = DataFrame(amplitude=Number[], period_initial=Number[], period_average=Number[])
+
+for deg in range(5, 175; step = 10) # TODO: update for final
+    local p = Pendulum(.3, deg2rad(deg), Bob(.05, .05, γ))
+    runthrough = simulate(p, 30) |> extremes |> periods
+    push!(df, [deg runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
 end
 
-gif(anim, "position.gif", fps = 24)
+plot(df[!, :amplitude], [df[!, :period_initial] df[!, :period_average]], label = ["First Period" "Average"])
+# df
+```
+
+## Length (radius) and Period
+```julia
+df = DataFrame(len=Number[], period_initial=Number[], period_average=Number[])
+
+for len in range(.1, 2, step=.1)
+    local p = Pendulum(len, deg2rad(30), Bob(.05, .05, γ))
+    runthrough = simulate(p, 30) |> extremes |> periods
+    push!(df, [len runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
+end
+
+plot(df[!, :len], [df[!, :period_initial] df[!, :period_average]], label = ["First Period" "Average"])
+```
+
+To better visualize the effects of air resistance we can increase ``\theta``
+to increase the dampening effect.
+```julia, echo=false
+df = DataFrame(len=Number[], period_initial=Number[], period_average=Number[])
+
+for len in range(.1, 2, step=.1)
+    local p = Pendulum(len, deg2rad(100), Bob(.05, .05, γ))
+    runthrough = simulate(p, 30) |> extremes |> periods
+    push!(df, [len runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
+end
+
+plot(df[!, :len], [df[!, :period_initial] df[!, :period_average]], label = ["First Period" "Average"])
 ```
