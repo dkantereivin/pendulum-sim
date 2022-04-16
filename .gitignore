@@ -1,0 +1,5 @@
+*.aux
+*.out
+*.log
+src/cache/
+src/figures/

@@ -17,7 +17,7 @@ From a physics standpoint, pendulums demonstrate the constant transformation bet
 and, in a vacuum (with frictionless a frictionless pivot),
 can also demonstrate Newton's law of inertia by continuing to swing forever.
 
-![Pendulum](pendulum.svg)
+![Pendulum](pendulum.png)
 
 Pendulums rely on the force of gravity pulling down on a massive bob,
 counteracted by tensive forces on the massless string/rod.
@@ -33,7 +33,7 @@ The code is included in this report is written in the simplest terms possible;
 while a software background may be helpful,
 a physics background should be sufficient to *understand* the report *and* the simulation's source code.
 
-\pagebreak
+``\pagebreak``
 
 # Purpose
 Given the importance of the oscillation period,
@@ -66,11 +66,12 @@ $$
 where ``L`` is the Lagrangian and ``D`` is the dampening factor.
 Then, where ``l`` represents the length of the rod:
 $$
-L = K - U \\
-K = \text{Kinetic Energy} = \frac{1}{2} mv^2 \\
-= \frac{1}{2} ml^2\theta^2 \\
-
-U = \text{Potential Energy} = mgh = mg(l - l \cdot \cos \theta)\\
+\begin{align*}
+    L &= K - U \\
+    K &= \text{Kinetic Energy} = \frac{1}{2} mv^2 \\
+    &= \frac{1}{2} ml^2\theta^2 \\ \\
+    U &= \text{Potential Energy} = mgh = mg(l - l \cdot \cos \theta
+\end{align*}
 $$
 
 Together, this comprises the final Lagrangian:
@@ -79,8 +80,10 @@ L = \frac{1}{2} ml^2\theta^2 - mg(l - l \cdot \cos \theta)
 $$
 which is differentiated with respect to ``\theta`` to achieve:
 $$
-\frac{d}{dt}\left(ml^2\dot\theta\right) = -L \sin\theta mg \\
-\implies \ddot\theta = α = -\frac{g\sin\theta}{l}
+\begin{align*}
+    \frac{d}{dt}\left(ml^2\dot\theta\right) &= -L \sin\theta mg \\
+    \implies \ddot\theta &= \alpha = -\frac{g\sin\theta}{l}
+\end{align*}
 $$
 As code:
 ```julia, eval=false
@@ -96,16 +99,20 @@ which are impacted substantially by air resistance.
 To simulate air resistance,
 first I determined whether the linear or quadratic formulas would be more appropriate.
 $$
-\Omega_{\mathrm{linear}} = bv = βDv \\
-\Omega_{\mathrm{quadratic}} = cv^2 = \gamma D^2 v^2
+\begin{align*}
+\Omega_{\mathrm{linear}} &= bv = βDv \\
+\Omega_{\mathrm{quadratic}} &= cv^2 = \gamma D^2 v^2
+\end{align*}
 $$
 where ``D`` is the diameter of the bob.
 The bob is assumed to be a sphere with ``\gamma = `j const γ = .25; γ` ``.
 I also chose to measure velocity from the point of maximum PE.
 $$
-mgh = \frac{1}{2} mv^2 \\
-\implies gl = v^2 \\
-v = \sqrt{gl}
+\begin{align*}
+mgh &= \frac{1}{2} mv^2 \\
+\implies gl &= v^2 \\
+\implies v &= \sqrt{gl}
+\end{align*}
 $$
 Then:
 $$
@@ -115,7 +122,7 @@ $$
 $$
 Using example values ``D = `j D = .1; D`\mathrm{m}`` and ``l = `j l = .1; l`\mathrm{m}``:
 ```julia
-(1.6e-4) \ (γ * D * √(g * l))
+(1.6e-4) \ (γ * D * sqrt(g * l))
 ```
 we have that the quadratic formula is substantially larger
 (`\` is [inverse division](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Arithmetic-Operators))
@@ -172,7 +179,7 @@ In order to run the simulation with and without air resistance,
 I simply set ``\gamma = 0`` which removes this term from the equation for ``\alpha``.
 
 # Results
-Please see Appendix B for animated figures.
+
 ## General/Simulation Effectiveness
 Firstly, to validate our simulation for future tests,
 we can visualize the trajectory of our pendulum with and without air resistance.
@@ -204,35 +211,80 @@ whereas the simulation with air resistance displays a slight dampening effect.
 This effect is likely so pronounced because the bob is light (`j p.bob.mass * 1000`g).
 
 ## Amplitude and Period
-```julia
+As we can see from the below figure,
+as amplitude increases, the time of the first period
+(roughly equivalent to the period in a vacuum) increases as well.
+This effect is very minor below ``30^\circ`` but becomes very pronounced
+above ~80 degrees. The ability to simulate such high angles with "rod-like" behaviour
+(that is, with no flexibility in the string),
+is one advantage of using a computer simulation over a physical pendulum.
+While the average period also increases with amplitude,
+this effect is far less pronounced given that an increased velocity
+increases the dampening factor of air resistance.
+This curve is closer to what we would likely see in a real-life experiment on Earth.
+```julia, fig_cap="Oscillation period increases with release amplitude."
 df = DataFrame(amplitude=Number[], period_initial=Number[], period_average=Number[])
 
-for deg in range(5, 175; step = 10) # TODO: update for final
+for deg in range(5, 175; step = 2)
     local p = Pendulum(.3, deg2rad(deg), Bob(.05, .05, γ))
     runthrough = simulate(p, 30) |> extremes |> periods
-    push!(df, [deg runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
+    @inbounds push!(df, [deg runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
 end
 
-plot(df[!, :amplitude], [df[!, :period_initial] df[!, :period_average]], label = ["First Period" "Average"])
-# df
+plot(
+    df[!, :amplitude],
+    [df[!, :period_initial] df[!, :period_average]],
+    label = ["First Period" "Average Period"],
+    xlabel = "Amplitude (deg)",
+    ylabel = "Period (s)"
+)
 ```
 
+Showing the every 2 degrees of the first ~20 extremes
+gives a close up of the effect on small angles.
+```julia, echo=false
+@view df[1:20, :]
+```
+```julia, echo=false, fig_cap="Period of First 20 Extremes: Detailed Image of Small Max Amplitudes."
+plot(
+    df[1:20, :amplitude],
+    [df[1:20, :period_initial] df[1:20, :period_average]],
+    label = ["First Period" "Average"],
+    xlabel = "Amplitude (deg)",
+    ylabel = "Period (s)"
+)
+```
+
+This supports Galileo's hypothesis that amplitude has minimal/negligible
+impact on period at very small angles, but as angle increases,
+it starts to show very relevant effects.
+
 ## Length (radius) and Period
-```julia
+Period also increase substantially as length is increased,
+from 10cm to 2m, though the rate of increase slows as the pendulum lengthens.
+```julia, fig_cap="Period increases with penulum length (radius) at a release angle of 30deg."
 df = DataFrame(len=Number[], period_initial=Number[], period_average=Number[])
 
 for len in range(.1, 2, step=.1)
     local p = Pendulum(len, deg2rad(30), Bob(.05, .05, γ))
     runthrough = simulate(p, 30) |> extremes |> periods
-    push!(df, [len runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
+    @inbounds push!(df, [len runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
 end
 
-plot(df[!, :len], [df[!, :period_initial] df[!, :period_average]], label = ["First Period" "Average"])
+plot(
+    df[!, :len],
+    [df[!, :period_initial] df[!, :period_average]],
+    label = ["First Period" "Average"],
+    xlabel = "String Length (m)",
+    ylabel = "Period (s)"
+)
 ```
 
 To better visualize the effects of air resistance we can increase ``\theta``
 to increase the dampening effect.
-```julia, echo=false
+Once again, air resistance reduces the period as length increases,
+for the same reason as above.
+```julia, echo=false, fig_cap="Period increases with penulum length (radius) at a release angle of 100deg."
 df = DataFrame(len=Number[], period_initial=Number[], period_average=Number[])
 
 for len in range(.1, 2, step=.1)
@@ -241,5 +293,49 @@ for len in range(.1, 2, step=.1)
     push!(df, [len runthrough[1] mean(runthrough[1:min(20, length(runthrough))])])
 end
 
-plot(df[!, :len], [df[!, :period_initial] df[!, :period_average]], label = ["First Period" "Average"])
+plot(
+    df[!, :len],
+    [df[!, :period_initial] df[!, :period_average]],
+    label = ["First Period" "Average"],
+    xlabel = "String Length (m)",
+    ylabel = "Period (s)"
+)
 ```
+This supports Galileo's hypothesis that length *does* affect period.
+
+# Error, Uncertainty, and Limitations
+Given the simulated nature of the experiment,
+and that it uses precise formulas without any random parameters,
+it is completely deterministic.
+Repeating the simulation will neccesarily yield the same results every time.
+Consequently, there is no uncertainty in the data or figures.
+This simulation is "perfectly" precise.
+
+This simulation is very accurate as well;
+while there are very few sources of error (systemic and human),
+there exist some very minor sources of error inherent to the method.
+
+Firstly, Euler's method is *not* precise integration,
+and as such the simulation "overshoots" the exactly correct value for
+``\theta`` each period.
+However, this error is effectively mitigated by reducing
+the Euler step size to `j Δt` seconds.
+Based on experimental simulations of this value of `Δt`,
+``\epsilon = \pm 10^{-7}`` from the actual.
+Additionally, this error cancels itself since
+the same Euler inaccuracy occurs at both extremes of the ``\sin`` function.
+
+In addition, by virtue of being a computer simulation that uses floating point values,
+there exists some negligible (and unavoidable) floating point inaccuracy which is typically
+``<10^-8`` at the most. This inaccuracy is unpredictable, but it does not significantly impact the results.
+
+It should be noted that while computer simulations are very useful for precise and quick simulation of physics processes,
+they rely on prior real-world experiments and observations.
+For example, ``\gamma`` is experimentally determined for spheres.
+To verify the experiment, I also compared its behaviour to real-life pendulum behaviour,
+to ensure that it behaved similarly.
+
+# Appendix A
+The full source code for this project is available on GitHub: [https://github.com/dkantereivin/pendulum-sim](https://github.com/dkantereivin/pendulum-sim).
+
+Plots are generated using Julia's Plots library ([doi: 10.5281](https://doi.org/10.5281/zenodo.4725317)).

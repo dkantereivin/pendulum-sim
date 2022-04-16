@@ -12,8 +12,11 @@
    viewBox="0 0 137.31717 110.83177"
    version="1.1"
    id="svg8"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   sodipodi:docname="pendulum.svg">
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="pendulum.svg"
+   inkscape:export-filename="/mnt/c/Users/david/Documents/University/ARTSSCI 2D06 - Physics/lab/src/pendulum.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <title
      id="title2534">Pendulum Diagram</title>
   <defs
@@ -203,16 +206,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="242.94432"
-     inkscape:cy="293.54382"
+     inkscape:cx="119.01575"
+     inkscape:cy="179.25811"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
-     inkscape:window-width="2560"
-     inkscape:window-height="1369"
-     inkscape:window-x="1072"
-     inkscape:window-y="189"
+     inkscape:window-width="1908"
+     inkscape:window-height="975"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -240,10 +243,13 @@
     <text
        xml:space="preserve"
        id="pivot-label"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';white-space:pre;shape-inside:url(#rect845);"
-       transform="translate(2.6961387,-4.0090429)"><tspan
-         x="97.552734"
-         y="50.59347"><tspan>Pivot</tspan></tspan></text>
+       style="font-size:4.23332977px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';white-space:pre;shape-inside:url(#rect845)"
+       x="2.8851268"
+       y="-3.4420786"><tspan
+         x="100.43786"
+         y="47.151394"
+         id="tspan43"><tspan
+           id="tspan41">Pivot</tspan></tspan></text>
     <circle
        style="opacity:1;fill:#000000;stroke:none;stroke-width:0.264999;stroke-opacity:1"
        id="bob"
@@ -264,7 +270,7 @@
        id="path905" />
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.264583"
+       style="font-size:4.23332977px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.26458299"
        x="107.84325"
        y="62.674706"
        id="text909"><tspan
@@ -272,10 +278,10 @@
          id="tspan907"
          x="107.84325"
          y="62.674706"
-         style="stroke-width:0.264583">θ</tspan></text>
+         style="stroke-width:0.26458299">θ</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.264583"
+       style="font-size:4.23332977px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.26458299"
        x="100.89424"
        y="88.332573"
        id="text913"><tspan
@@ -283,7 +289,7 @@
          id="tspan911"
          x="100.89424"
          y="88.332573"
-         style="stroke-width:0.264583">L</tspan></text>
+         style="stroke-width:0.26458299">L</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;line-height:1.25;font-family:Consolas;-inkscape-font-specification:Consolas;stroke-width:0.264583"
@@ -298,24 +304,23 @@
     <text
        xml:space="preserve"
        id="pivot-label-0"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';white-space:pre;shape-inside:url(#rect845-8);"
-       transform="translate(66.87775,72.00749)"><tspan
-         x="97.552734"
-         y="50.59347"><tspan>Bob/Mass</tspan></tspan></text>
-    <text
-       xml:space="preserve"
-       id="text1860"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';white-space:pre;shape-inside:url(#rect1862);"
-       transform="translate(3.8754082,10.690781)"><tspan
-         x="93.8125"
-         y="143.87081"><tspan>Max KE</tspan></tspan></text>
+       style="font-size:4.19459915px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';white-space:pre;shape-inside:url(#rect845-8);stroke-width:0.99085099"
+       x="67.622162"
+       y="69.363739"
+       transform="scale(0.99085098,1.0092335)"><tspan
+         x="164.28239"
+         y="119.49435"
+         id="tspan58"
+         style="stroke-width:0.99085099">Bob/Mass</tspan></text>
     <text
        xml:space="preserve"
        id="text1860-3"
        style="font-size:4.23333px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';white-space:pre;shape-inside:url(#rect1862-0);"
        transform="translate(-48.432525,-6.1691257)"><tspan
          x="93.8125"
-         y="143.87081"><tspan>Max PE</tspan></tspan></text>
+         y="143.87081"
+         id="tspan68"><tspan
+           id="tspan66">Max PE</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.365;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.46, 1.46;stroke-dashoffset:0;stroke-opacity:1"
        d="m 156.21904,126.15122 c 0,0 -33.30588,11.8451 -50.64758,11.89349 -17.364969,0.0485 -50.781209,-11.62623 -50.781209,-11.62623"
@@ -369,7 +374,7 @@
        id="path2430" />
     <text
        xml:space="preserve"
-       style="font-size:3.175px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.264583"
+       style="font-size:3.17499995px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.26458299"
        x="140.31651"
        y="134.03566"
        id="text2510"><tspan
@@ -377,8 +382,19 @@
          id="tspan2508"
          x="140.31651"
          y="134.03566"
-         style="font-style:italic;font-size:3.175px;stroke-width:0.264583">mg<tspan
+         style="font-style:italic;font-size:3.17499995px;stroke-width:0.26458299">mg<tspan
    style="font-style:normal"
-   id="tspan2532">sin</tspan>θ</tspan></text>
+   id="tspan75">sinθ</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="98.581505"
+       y="149.30301"
+       id="text109"><tspan
+         sodipodi:role="line"
+         id="tspan107"
+         x="98.581505"
+         y="149.30301"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';stroke-width:0.26458332">Max KE</tspan></text>
   </g>
 </svg>
